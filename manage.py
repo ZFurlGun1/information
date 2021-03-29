@@ -1,9 +1,4 @@
-from flask import Flask, session
-from flask.ext.sqlalchemy import SQLAlchemy
-from flask.ext.wtf import CSRFProtect
-# 可以用来指定session保存的位置
-from flask_session import Session
-from config import Config
+from flask import session
 from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from info import create_app, db

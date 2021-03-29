@@ -1,4 +1,5 @@
 from flask import Flask
+# 可以用来指定SESSION的储存位置
 from flask.ext.session import Session
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import CSRFProtect
