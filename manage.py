@@ -1,4 +1,3 @@
-from redis import StrictRedis
 from flask import Flask, session
 from flask.ext.sqlalchemy import SQLAlchemy
 from flask.ext.wtf import CSRFProtect
