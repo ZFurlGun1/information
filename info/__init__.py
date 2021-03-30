@@ -9,9 +9,12 @@ from flask.ext.wtf import CSRFProtect
 from redis import StrictRedis
 
 from config import config
+from info.modules.index import index_blu
 
 # 初始化数据库
 # 在falsk很多扩展里面都可以先初始化扩展对象，然后再去调用app_init方法初始化
+
+
 db = SQLAlchemy()
 
 
@@ -44,5 +47,7 @@ def create_app(config_name):
     CSRFProtect(app)
     # 设置session保存指定位置
     Session(app)
+    #注册蓝图
+    app.register_blueprint(index_blu)
 
     return app
