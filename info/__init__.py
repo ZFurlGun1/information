@@ -9,13 +9,13 @@ from flask.ext.wtf import CSRFProtect
 from redis import StrictRedis
 
 from config import config
-from info.modules.index import index_blu
 
 # 初始化数据库
 # 在falsk很多扩展里面都可以先初始化扩展对象，然后再去调用app_init方法初始化
 
 
 db = SQLAlchemy()
+redis_store = None # type: StrictRedis
 
 
 def setup_log(config_name):
@@ -42,12 +42,14 @@ def create_app(config_name):
 
     db.init_app(app)
     # 初始化redis存储对象
+    global redis_store
     redis_store = StrictRedis(host=config[config_name].REDIS_HOST, port=config[config_name].REDIS_PORT)
     # 开启当前csrf保护。只做服务器验证功能
     CSRFProtect(app)
     # 设置session保存指定位置
     Session(app)
-    #注册蓝图
+    # 注册蓝图
+    from info.modules.index import index_blu
     app.register_blueprint(index_blu)
 
     return app
