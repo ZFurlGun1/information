@@ -3,7 +3,9 @@ from flask_script import Manager
 from flask_migrate import Migrate, MigrateCommand
 from info import create_app, db
 
-app = create_app('developement')
+
+# create_app类似于工厂方法
+app = create_app('development')
 manager = Manager(app)
 
 # 数据库迁移
@@ -15,7 +17,7 @@ manager.add_command('db', MigrateCommand)
 
 @app.route('/')
 def index():
-    session["name"] = "itheima"
+    # session["name"] = "itheima"
     return 'index'
 
 

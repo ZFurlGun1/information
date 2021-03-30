@@ -1,10 +1,11 @@
+import logging
 from redis import StrictRedis
 
 
 class Config(object):
     """项目的配置"""
 
-    DEBUG = True
+
 
     SECRET_KEY = "jobUtRvVM5V5ArvQLbjmFwdVf20jcvdtE0kmT7Ef61ngxa0YNTt/kMVJ1YEplMUv"
 
@@ -26,20 +27,30 @@ class Config(object):
     SESSION_PERMANENT = False
     # 设置过期时间
     PERMANENT_SESSION_LIFETIME = 86400 * 2
+    # 设置日志等级
+    LOG_LEVEL = logging.DEBUG
 
 
-class DevelopementConfig(Config):
+class DevelopmentConfig(Config):
     """开发模式下的配置"""
     DEBUG = True
 
 
 class ProductionConfig(Config):
     """生产模式下的配置"""
-    pass
+    DEBUG = False
+    LOG_LEVEL = logging.WARNING
+
+
+class TestingConfig(Config):
+    """单元测试环境下的配置"""
+    DEBUG = True
+    TESTING = True
 
 
 # 定义配置字典
 config = {
-    "development": DevelopementConfig,
-    "production": ProductionConfig
+    "development": DevelopmentConfig,
+    "production": ProductionConfig,
+    "testing": TestingConfig
 }
