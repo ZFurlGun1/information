@@ -4,7 +4,6 @@ from . import index_blu
 
 @index_blu.route('/')
 def index():
-    # session["name"] = "itheima"
-    redis_store.set("name","itcast")
-
+    # 向redis中保存一个值 name itcast
+    redis_store.set("name", "itcast")
     return 'index'
