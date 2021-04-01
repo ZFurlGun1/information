@@ -46,7 +46,8 @@ def register():
     user.nick_name=mobile
     # 记录用户最后一次的登陆时间
     user.last_login=datetime.now()
-    # TODO 对密码作处理
+    # 对密码作处理
+    user.password=password
     # 6.添加到数据库
     try:
         db.session.sdd(user)
@@ -111,10 +112,10 @@ def send_sms_code():
     current_app.logger.debug("短信验证码内容是：%s" % sms_code_str)
 
     # 6发送短信验证码
-    result = CCP().send_template_sms(mobile, [sms_code_str, constants.SMS_CODE_REDIS_EXPIRES / 5], "1")
-    if result != 0:
-        # 代表发送不成功
-        return jsonify(errno=RET.THIRDERR, errmsg="发送短信失败")
+    # result = CCP().send_template_sms(mobile, [sms_code_str, constants.SMS_CODE_REDIS_EXPIRES / 5], "1")
+    # if result != 0:
+    #     # 代表发送不成功
+    #     return jsonify(errno=RET.THIRDERR, errmsg="发送短信失败")
 
         # 保存验证码内容到redis
     try:

@@ -55,6 +55,16 @@ class User(BaseModel, db.Model):
                                 backref=db.backref('followed', lazy='dynamic'),
                                 lazy='dynamic')
 
+    @property
+    def password(self):
+        return
+
+    @password.setter
+    def password(self, value):
+       # self.password_hash=对val加密
+        self.password_hash=generate_password_hash(value)
+
+
     # 当前用户所发布的新闻
     news_list = db.relationship('News', backref='user', lazy='dynamic')
 
