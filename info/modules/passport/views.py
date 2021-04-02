@@ -1,4 +1,5 @@
 import random
+import re
 from datetime import datetime
 
 from flask import abort, jsonify
@@ -17,6 +18,58 @@ from info.utils.captcha.captcha import captcha
 from info.utils.response_code import RET
 
 
+@passport_blu.route('/login')
+def login():
+    """
+    # 登陆
+    # 1.获取参数
+    # 2.校验参数
+    # 3.校验密码是否正确
+    # 4.保存用户的登陆状态
+    # 5.响应
+    :return:
+    """
+    # 1.获取参数
+    params_dict=request.json
+
+    mobile=params_dict.get("mobile")
+    password=params_dict.get("password")
+
+    # 2.校验参数
+    if not all([mobile,password]):
+        return jsonify(errno=RET.PARAMERR,errmsg='参数错误')
+
+    # 校验手机号是否正确
+    if not re.match('1[35678]\\d{9}', mobile):
+        return jsonify(errno=RET.PARAMERR, errmsg="手机号格式不正确")
+
+    # 3.校验密码是否正确
+    # 先查询出当前是否有指定手机号码的用户
+    try:
+        user=User.query.filter(User.mobile==mobile).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DBERR,errmsg='数据查询错误')
+    # 判断用户是否存在
+    if not user:
+        return jsonify(errno=RET.NODATA,errmsg='用户不存在')
+
+    # 校验登陆密码和当前用户密码四否一致
+    if not user.check_passowrd(password):
+        return jsonify(errno=RET.PWDERR,errmsg='用户名或密码错误')
+
+    # 4.保存用户登陆状态
+    session["uesr_id"]=user.id
+    session["mobile"]=user.mobile
+    session["nick_name"]=user.nick_name
+
+    # 5.响应
+    return jsonify(errno=RET.OK,errmsg='登陆成功')
+
+
+
+
+
 @passport_blu.route('/register',methods=['POST'])
 def register():
     # 1.获取参数
@@ -28,6 +81,11 @@ def register():
     # 2.校验参数
     if not all([mobile,smscode,password]):
         return jsonify(errno=RET.PARAMERR,errmsg='参数有误')
+
+    # 校验手机号是否正确
+    if not re.match('1[35678]\\d{9}', mobile):
+        return jsonify(errno=RET.PARAMERR, errmsg="手机号格式不正确")
+
     # 3.取到服务器保存的真是短信验证码内容
     try:
         real_sms_code=redis_store.get("SMS_" + mobile)
@@ -92,6 +150,9 @@ def send_sms_code():
     if not all([mobile, image_code, image_code_id]):
         # {"errno": "4100", "errmsg": "参数有误"}
         return jsonify(errno=RET.PARAMERR, errmsg='参数有误')
+    # 校验手机号是否正确
+    if not re.match('1[35678]\\d{9}', mobile):
+        return jsonify(errno=RET.PARAMERR, errmsg="手机号格式不正确")
 
     # 3.先从redis中取出真实的验证码内容
     try:
@@ -112,10 +173,10 @@ def send_sms_code():
     current_app.logger.debug("短信验证码内容是：%s" % sms_code_str)
 
     # 6发送短信验证码
-    # result = CCP().send_template_sms(mobile, [sms_code_str, constants.SMS_CODE_REDIS_EXPIRES / 5], "1")
-    # if result != 0:
-    #     # 代表发送不成功
-    #     return jsonify(errno=RET.THIRDERR, errmsg="发送短信失败")
+    result = CCP().send_template_sms(mobile, [sms_code_str, constants.SMS_CODE_REDIS_EXPIRES / 5], "1")
+    if result != 0:
+        # 代表发送不成功
+        return jsonify(errno=RET.THIRDERR, errmsg="发送短信失败")
 
         # 保存验证码内容到redis
     try:
