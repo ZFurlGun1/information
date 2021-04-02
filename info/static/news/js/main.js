@@ -39,12 +39,12 @@ $(function () {
     //         'font-size': 12
     //     }, 'fast').siblings('input').focus().parent().addClass('hotline');
     // });
-    $('.form_group').on('click',function(){
+    $('.form_group').on('click', function () {
         $(this).children('input').focus()
     })
 
-    $('.form_group input').on('focusin',function(){
-        $(this).siblings('.input_tip').animate({'top':-5,'font-size':12},'fast')
+    $('.form_group input').on('focusin', function () {
+        $(this).siblings('.input_tip').animate({'top': -5, 'font-size': 12}, 'fast')
         $(this).parent().addClass('hotline');
     })
 
@@ -119,30 +119,33 @@ $(function () {
 
         }
 
-        var params={
-            "mobile":mobile,
-            "password":password
+        var params = {
+            "mobile": mobile,
+            "password": password
         }
 
         $.ajax({
-            url:"/passport/login",
-            type:"post",
-            data:JSON.stringify(params),
-            contentType:"application/json",
-            success:function (resp) {
-            if (resp.errno=="0"){
-                //代表登陆成功
-                location.reload()
-            }else {
-                $("#register-password-err").html(resp.errmsg)
-                $("#register-password-err").show()
+            url: "/passport/login",
+            type: "post",
+            data: JSON.stringify(params),
+            contentType: "application/json",
+            // 在 header 中添加 csrf_token 的随机值
+            headers: {
+                "X-CSRFToken": getCookie('csrf_token')
+            },
+            success: function (resp) {
+                if (resp.errno == "0") {
+                    //代表登陆成功
+                    location.reload()
+                } else {
+                    $("#register-password-err").html(resp.errmsg)
+                    $("#register-password-err").show()
                 }
             }
         })
-     })
+    })
 
-        // 发起登录请求
-
+    // 发起登录请求
 
 
     // 注册按钮点击
@@ -174,22 +177,26 @@ $(function () {
             $("#register-password-err").show();
 
         }
-         var params = {
+        var params = {
             "mobile": mobile,
             "smscode": smscode,
             "password": password,
-            }
+        }
 
         $.ajax({
-            url:"/passport/register",
-            type:"post",
-            data:JSON.stringify(params),
-            contentType:"application/json",
-            success:function (resp) {
-                if(resp.errno=="0"){
+            url: "/passport/register",
+            type: "post",
+            data: JSON.stringify(params),
+            contentType: "application/json",
+            // 在 header 中添加 csrf_token 的随机值
+            headers: {
+                "X-CSRFToken": getCookie('csrf_token')
+            },
+            success: function (resp) {
+                if (resp.errno == "0") {
                     //刷新当前页面
                     location.reload()
-                }else {
+                } else {
                     $("#register-password-err").html(resp.errmsg)
                     $("#register-password-err").show()
                 }
@@ -254,6 +261,10 @@ function sendSMSCode() {
         data: JSON.stringify(params),
         // 请求参数的数据类型
         contentType: "application/json",
+        // 在 header 中添加 csrf_token 的随机值
+        headers: {
+            "X-CSRFToken": getCookie('csrf_token')
+        },
         success: function (response) {
             if (response.errno == "0") {
                 // 代表发送成功
@@ -287,7 +298,7 @@ function sendSMSCode() {
 
 }
 function logout() {
-    $.get('/passport/logout',function (resp) {
+    $.get('/passport/logout', function (resp) {
         location.reload()
     })
 }
