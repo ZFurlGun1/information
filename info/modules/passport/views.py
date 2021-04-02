@@ -18,7 +18,7 @@ from info.utils.captcha.captcha import captcha
 from info.utils.response_code import RET
 
 
-@passport_blu.route('/login')
+@passport_blu.route('/login',methods=['POST'])
 def login():
     """
     # 登陆
@@ -108,7 +108,7 @@ def register():
     user.password=password
     # 6.添加到数据库
     try:
-        db.session.sdd(user)
+        db.session.add(user)
         db.session.commit()
     except Exception as e:
         current_app.logger.error(e)
@@ -173,10 +173,10 @@ def send_sms_code():
     current_app.logger.debug("短信验证码内容是：%s" % sms_code_str)
 
     # 6发送短信验证码
-    result = CCP().send_template_sms(mobile, [sms_code_str, constants.SMS_CODE_REDIS_EXPIRES / 5], "1")
-    if result != 0:
-        # 代表发送不成功
-        return jsonify(errno=RET.THIRDERR, errmsg="发送短信失败")
+    # result = CCP().send_template_sms(mobile, [sms_code_str, constants.SMS_CODE_REDIS_EXPIRES / 5], "1")
+    # if result != 0:
+    #     # 代表发送不成功
+    #     return jsonify(errno=RET.THIRDERR, errmsg="发送短信失败")
 
         # 保存验证码内容到redis
     try:
